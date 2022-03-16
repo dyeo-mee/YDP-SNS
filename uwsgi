@@ -1,0 +1,9 @@
+module = wsgi
+
+socket = /tmp/uwsgi.sock
+chmod-socket = 666
+vacuum = true
+
+daemonize = /home/MJ/flask/uwsgi.log
+
+die-on-term = true
