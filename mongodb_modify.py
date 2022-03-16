@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
-conn = pymongo.MongoClient("mongodb://root:study111@13.125.71.134:27017/root?authSource=admin")
+conn = pymongo.MongoClient("mongodb://root:study111@15.164.96.105:27017/root?authSource=admin")
 db = conn.get_database('root')
 col = db.get_collection('user')
 col_post = db.get_collection('post')

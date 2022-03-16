@@ -27,7 +27,7 @@ def create_app(debug=False):
 app = create_app(debug=True)
 # socketio = SocketIO(app)
 
-conn = pymongo.MongoClient("mongodb://root:study111@13.125.71.134:27017/root?authSource=admin")
+conn = pymongo.MongoClient("mongodb://root:study111@15.164.96.105:27017/root?authSource=admin")
 from app import views
 
 

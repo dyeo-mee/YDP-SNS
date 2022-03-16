@@ -3,7 +3,7 @@ from flask_socketio import emit
 from bson.objectid import ObjectId
 import pymongo
 
-conn = pymongo.MongoClient("mongodb://root:study111@13.125.71.134:27017/root?authSource=admin")
+conn = pymongo.MongoClient("mongodb://root:study111@15.164.96.105/root?authSource=admin")
 db = conn.get_database('root')
 col_user = db.get_collection('user')
 col_post = db.get_collection('post')
