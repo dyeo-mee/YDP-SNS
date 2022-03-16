@@ -13,8 +13,8 @@ pipeline {
             steps {
                 echo 'Clonning Repository'
 
-                git url: 'https://github.com/mang0206/YDP-SNS.git',
-                    branch: 'MJ',
+                git url: 'https://github.com/dyeo-mee/YDP-SNS.git',
+                    branch: 'testing',
                     credentialsId: 'snsMJ'
             }
 
