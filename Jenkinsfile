@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     //깃을 3분 주기로 끌어온다
-    triggers {
-        pollSCM('*/3 * * * *')
-    }
+    // triggers {
+    //     pollSCM('*/3 * * * *')
+    // }
     stages {
         // 레포지토리를 다운로드 받음
         stage('Prepare') {
