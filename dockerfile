@@ -1,6 +1,9 @@
 FROM python:3.8
 WORKDIR /app 
 
-RUN pip install -r requirements.txt 
+COPY requirements.txt /tmp/
+
+RUN pip install -U pip && pip install -r /tmp/requirements.txt
+
 CMD ["uwsgi","uwsgi.ini"]
 
