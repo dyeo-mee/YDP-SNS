@@ -112,7 +112,7 @@ function indicate_comment(data, comment_div, notice = false){
         create_div.appendChild(create_a_img);
         create_div.appendChild(create_div_user_comment);
         // 좋아요 리스트에 최종적으로 div 태그 append
-        if (data['reply_list'].length > 0) {
+        if (typeof data['reply_list'] != "undefined") {
             create_div.appendChild(create_btn_reply);
         }
 
