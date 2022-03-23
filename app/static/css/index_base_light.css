@@ -868,7 +868,7 @@ a:visited{color: black}
     background-color: #f1f1f1;
     transition: max-height 0.5s;
 }
-#update_textarea{
+.update_textarea{
     width: 280px;
     margin: 10px 0;
     resize: none;
@@ -1083,6 +1083,9 @@ a:visited{color: black}
 }
 .recomment.reply{
     margin: 0;
+}
+.recomment.delete_reply{
+    padding-left: 7px;
 }
 /* .reply_show{
     margin-left: 10px;

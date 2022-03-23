@@ -52,6 +52,9 @@ $('html').click(function(e){
         else {
             return console.log('notice post');
         };
+    } //withdrawal btn
+    else if(e.target.className == 'withdrawal'){
+        return console.log('withdrawal')
     } //not modal area
     else if(e.target != user_popup || e.target != notice_popup || e.target.className == 'notice_modal_background' || e.target.id == 'notice_modal_close_img'){
         //user icon click

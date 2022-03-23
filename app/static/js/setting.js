@@ -189,16 +189,18 @@ $('#setting_logout').click(function(){
 
 //회원 탈퇴
 $("html").click(function(e){
-    // console.log(e.target)
-    let withdrawal = document.getElementsByClassName("more_icon_popup_back");
+    let withdrawal = document.getElementById("withdrawal_popup_back");
     let withdrawal_info = document.getElementsByClassName("withdrawal_info");
     let withdrawal_info2 = document.getElementsByClassName('withdrawal_info2');
     let withdrawal_step = document.getElementsByClassName('withdrawal_step');
     let withdrawal_complete = document.getElementsByClassName('withdrawal_complete');
+    console.log(withdrawal)
     
+    console.log(e.target.id)
     //탈퇴 버튼
     if (e.target.className == 'withdrawal') {
-        withdrawal[0].className = 'more_icon_popup_back';
+        withdrawal.classList.remove('none');
+        console.log(withdrawal.className)
     } //탈퇴 진행(확인) 버튼
     else if (e.target.id == 'withdrawal_btn') {
         withdrawal_info2[0].style.maxHeight = '0px';
@@ -206,7 +208,7 @@ $("html").click(function(e){
         console.log("withdrawal_btn")
     } //탈퇴 취소 버튼(각 요소 원위치)
     else if (e.target.id == 'withdrawal_cancel_btn') {
-        withdrawal[0].className = 'more_icon_popup_back none';
+        withdrawal.className = 'more_icon_popup_back none';
         withdrawal_info[0].style = '';
         withdrawal_info2[0].style = '';
         withdrawal_step[0].style = '';

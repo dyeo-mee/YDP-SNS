@@ -16,7 +16,7 @@ $(function(){
     let more_icon_cancel = document.querySelectorAll(".more_icon_cancel");
     more_icon_cancel.forEach(cancel => {
         $(cancel).click(function(){
-            let post_text = $(cancel).siblings('.update_form').children('#update_textarea');
+            let post_text = $(cancel).siblings('.update_form').children('.update_textarea');
             //수정한 이력이 존재하면
             if (post_text.val() != post_text.attr('value')) {
                 if (confirm('작성하신 내용이 초기화됩니다.')==true) {
@@ -34,7 +34,7 @@ $(function(){
                 };
             } 
             //수정한 이력이 없다면 창닫힘
-            else{
+            else if (post_text.val() == post_text.attr('value')){
                 $(cancel).parent().parent().addClass('none');
                 document.querySelector(".body").className = "body";    
                 $(cancel).siblings('.post_delete_container').css({"max-height":"0"});
@@ -54,9 +54,10 @@ $('[id$=_update_btn]').click(function(){
 });
 
 //취소 버튼을 눌렀을 때
-$('[id$=_cancel_btn]').click(function(){
+$('[class$=_cancel_btn]').click(function(){
     //update 취소 버튼일 경우
-    if ($(this).attr('id') == 'update_cancel_btn') {
+    if ($(this).attr('class').includes('update_cancel_btn')) {
+        console.log('includes')
         let textarea = $(this).parent().siblings();
         //기존 post text에서 변경된 내용이 있으면
         if (textarea.val() != textarea.attr("value")){
@@ -72,14 +73,14 @@ $('[id$=_cancel_btn]').click(function(){
         }
     }
     //delete 취소 버튼일 경우
-    else if($(this).attr('id') == 'delete_cancel_btn'){
+    else if($(this).attr('class').includes('delete_cancel_btn')){
         $(this).parent().parent().css({"max-height":"0"});
     };
 });
 
 //게시글 삭제 메뉴 버튼을 눌렀을 때
 $('[id$=t_delete]').click(function(){
-    let textarea = $(this).siblings('.update_form').children('#update_textarea');
+    let textarea = $(this).siblings('.update_form').children('.update_textarea');
     //게시글 수정 이력이 존재하는 경우
     if (textarea.val() != textarea.attr("value")){
         console.log("change")
