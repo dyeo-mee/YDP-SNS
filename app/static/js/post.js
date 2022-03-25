@@ -444,7 +444,7 @@ $(function(){
                                 'reply_list': data['comment_dic'][i]['reply_list']
                             }
                             indicate_comment(comment_data,comment_div)
-                        }
+                        }                        
                     },
                     error: function(request, status, error){
                         // alert('ajax 통신 실패')
@@ -503,6 +503,10 @@ $('.comment_submit').click(function(){
         contentType: "application/json",
         success: function(data){
             indicate_comment(data, add_comment_list)
+            //comment textarea reset
+            let textarea = $(add_comment_list).siblings('.comment_form').children('.comment_textarea');
+            textarea[0].value = '';
+            
             comment_count += 1
             $(content_comment).text(String(comment_count) + '개')
 

@@ -35,7 +35,7 @@ if (postNotice.length != 0) {
                 document.querySelector(".body").className = "body scroll_hidden";
             });
         };
-        console.log($(post).find('.post_notice_comment_list'))
+        // console.log($(post).find('.post_notice_comment_list'))
         // $('this .post_notice_comment_list')
     });
 };

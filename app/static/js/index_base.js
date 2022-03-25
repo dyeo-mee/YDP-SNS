@@ -31,7 +31,7 @@ $(function(){
 
 //상단바 아이콘 팝업창 토글
 $('html').click(function(e){
-    console.log(e.target)
+    // console.log(e.target)
     //user modal area
     if (e.target == user_popup){
         return console.log('user modal');
