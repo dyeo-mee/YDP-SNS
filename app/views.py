@@ -144,7 +144,6 @@ def join_success():
 # 처음 접속 시 session 정보 확인 후 session 정보가 없다면 login 페이지로 이동
 @app.before_first_request
 def session_confirm():
-    print('frist_request', request.path)
     if request.path != "/login" or session.get('login') is None:
         return redirect(url_for('login'))
 
@@ -177,7 +176,6 @@ def base_notice():
 @app.route('/notice', methods=['POST'])
 def notice_check():
     col_notice = db.get_collection('notice')
-    print('notice')
     # data = request.get_json()
     session['notice_check'] = True
     for notics in session['notice']:
@@ -258,16 +256,12 @@ def search():
 
     # search_post = col_post.find({'hash_tag': {'$all': [search]}})
     search_post = list(col_post.find({'hashtag': search}))
-    print(search_post)
     return render_template('search.html', search = search, search_user_dic=search_user_dic, search_user_id=search_user_id,\
                  session_friend_list=session_friend_list, session_request_list=session_request_list, post_dic = search_post)
 
 # 팝업창 txt와 img를 DB로 전송
 @app.route("/content_submit", methods=["POST"])
 def content_submit():
-    # if request.get_json():
-
-    #     return jsonify(result = "success")
     col_post = db.get_collection('post')
     content_txt = request.form.get('content_txt')
     content_file = request.files.getlist("content_file[]")    
@@ -292,11 +286,7 @@ def content_submit():
             text[-1] = text[-1][:-1]
             text.append('\n')
 
-    # hash_tag = []
-    # if content_txt:
-    #     hash_tag = [h[1:] for h in content_txt.split(' ') if len(h) and h[0] == '#']
     hash_tag = [h[1:] for h in text if len(h) and h[0] == '#']
-        
 
     col_post.insert_one(
         {'create_user': session['login'],
@@ -310,7 +300,6 @@ def content_submit():
         'like' : [],
         'comment' : 0
     })
-    # print(hash_tag)
     flash("게시물이 업로드 되었습니다.")
     
     return redirect(url_for('user', user=session['nickname']))
@@ -318,7 +307,6 @@ def content_submit():
 @app.route("/content_submit/<post_id>", methods=["POST"])
 def content_update_submit(post_id):
     col_post = db.get_collection('post')
-    # post_id = request.form.get('post_id')
     content_txt = request.form.get('update_textarea') 
 
     tmp = content_txt.splitlines(True)
@@ -539,27 +527,21 @@ def user(user):
     session_friend_list = get_friend_list(session['login'])
     
     search_user = col_user.find_one({'nickname':user})
-    # get_user_image(search_user, 'profile_img')
-    # get_user_image(search_user, 'background_img')
+
     # user의 친구 정보 dictionary
     user_friend_list = get_friend_list(search_user['user_id']) 
     friend_dic = get_friend_dic(user_friend_list)
 
     # session 유저가 친구 요청을 보낸 user의 id 리스트
     session_request_list = [user['request_user'] for user in col_request_friend.find({'user_id': session['login']})]
-    # print(friend_dic)
+
     post_dic = col_post.find({'create_user_nickname': user}).sort("create_time", pymongo.DESCENDING)  
-    # print(list(post_dic))
+
     return render_template('user.html', user=search_user,session_friend_list=session_friend_list,\
          friend_dic=friend_dic, session_request_list = session_request_list, post_dic=post_dic)
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
-    # if request.get_json:
-    #     flash("로그아웃 되었습니다.")
-    #     session['login'] = None
-    #     return jsonify(result = "success")
-    print('logout')
     flash("로그아웃 되었습니다.")
     session.clear()
     return redirect(url_for('login'))
@@ -576,8 +558,6 @@ def friend():
     friend_list = get_friend_list(user)
     friend_dict = get_friend_dic(friend_list)
 
-    # request_friend={'aaa':'aaa', 'bbb':'bbb', 'ccc':'ccc', 'ddd':'ddd'}
-    # friend_list = ['aaa', 'bbb', 'ccc', 'ddd', 'eee', 'fff']
     recommend_frined_dic = {}
     for friend in friend_list:
         friend_friend_list = get_friend_list(friend)
@@ -590,7 +570,7 @@ def friend():
                 else:
                     recommend_frined_dic[f] = recommend_friend
                     recommend_frined_dic[f]['count'] = [friend_dic]
-    # print(recommend_frined_dic)
+
     return render_template('friend.html', request_friend=request_friend, friend_list=friend_dict, recommend_frined_dic=recommend_frined_dic)
 
 @app.route("/friend_respond", methods=["POST"])
@@ -616,7 +596,7 @@ def setting():
     col_user = db.get_collection('user')
     session_user = col_user.find_one({'user_id': session['login']})
     nicknames = list(col_user.find({},{'_id':0,'nickname':1}))
-    # get_user_image(session_user, 'background_img')
+
     nickname_list = [user['nickname'] for user in nicknames]
     nickname_dict = {'list': nickname_list}
     json_lis = json.dumps(nickname_dict)
@@ -629,22 +609,12 @@ def post_setting():
     # gridfs를 사용할 colection
     if 'setting_button_profile' in request.form:
         input_profile = request.files.get('setting_input_profile')
-        # colection에 파일 저장 put 함수는 저장된 document id를 반환한다
-        # _id = fs.put(input_profile)
-        # 해당 documet id 정보를 현재 session user document에 추가
-        # col_user.update_one(
-            # {'user_id': session['login']},
-            # {'$set' : {'profile_img': _id}}
-        # )
-        # session['profile_img'] = _id
+        
         filename = input_profile.filename.split('.')[0]
         ext = input_profile.filename.split('.')[-1]
         nickname = session['nickname']
         img_name = dt.datetime.now(timezone('Asia/Seoul')).strftime(f"{nickname}-{filename}-%Y-%m-%d-%H-%M-%S.{ext}")
 
-        # _delete = col_user.find_one({'user_id':session['login']}, {'_id':0, 'profile_img':1})['profile_img']
-        # if _delete != col_user.find_one({'user_id': 'default'}, {'_id':0, 'profile_img':1})['profile_img']:
-            # s3_delete_image(_delete[0])
         s3_put_object(s3,'ydpsns',input_profile,img_name)
         col_user.update_one(
             {'user_id': session['login']},
@@ -659,9 +629,7 @@ def post_setting():
         ext = input_background.filename.split('.')[-1]
         img_name = dt.datetime.now(timezone('Asia/Seoul')).strftime(f"{session['nickname']}-{filename}-%Y-%m-%d-%H-%M-%S.{ext}")
         s3_put_object(s3,'ydpsns',input_background,img_name)
-        # _delete = col_user.find_one({'user_id':session['login']}, {'_id':0, 'background_img':1})['background_img']
-        # if _delete != col_user.find_one({'user_id': 'default'}, {'_id':0, 'background_img':1})['background_img']:
-            # s3_delete_image(_delete[0])
+
         col_user.update_one(
             {'user_id': session['login']},
             {'$set' : {'background_img': [img_name, s3_get_image_url(s3, img_name)]}}
@@ -700,15 +668,12 @@ def change_pw():
     # print(request.get_json())
     # 사용자가 입력한 기존 pw와 세션 pw가 일치하면 check_password 함수 실행
     if request.get_json():
-        # print('first_if')
         data = request.get_json()
         origin_pw = data['origin_pw']
         db_pw = col_user.find_one({ "user_id" : session['login'] })
 
         if bcrypt.check_password_hash(db_pw['password'], origin_pw):
             flag = 1
-            # print('true')
-            # print(flag)
             return jsonify(result="success", flag=flag)
         else:
             flag = 0
@@ -745,8 +710,8 @@ def request_frie():
             [{'user_id': user}, {'request_user' : request_user}]
         }
         col_request_friend.delete_one(query)
+    # 친구 삭제 
     else:
-        print('================친구 삭제',user, request_user)
         col_user.update_one( {'user_id':user},{'$pull': {'friend_list' : request_user }})
         col_user.update_one( {'user_id':request_user},{'$pull': {'friend_list' : user }})
     
