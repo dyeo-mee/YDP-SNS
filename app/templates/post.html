@@ -20,17 +20,17 @@
                 <div class="more_icon_popup">
                     <button id="post_update_btn" class="more_popup_btn" >게시글 수정</button>
                     <form action="/content_submit/{{post['_id']}}" class="update_form" method="POST">
-                        <textarea id="update_textarea" class="hashtag" name="update_textarea" value="{{ post['text'] }}">{{ post['text'] }}</textarea>
+                        <textarea id="update_textarea" class="update_textarea hashtag" name="update_textarea" value="{{ post['text'] }}">{{ post['text'] }}</textarea>
                         <div class="update_btn_container">
-                            <button class="update_btn" id="update_apply_btn" type="submit">저장</button>
-                            <button class="update_btn" id="update_cancel_btn" type="button">작성 취소</button>
+                            <button class="update_btn update_apply_btn" type="submit">저장</button>
+                            <button class="update_btn update_cancel_btn" id="update_cancel_btn" type="button">작성 취소</button>
                         </div>
                     </form>
                     <button id="post_delete" class="more_popup_btn">게시글 삭제</button>
                     <div class="post_delete_container">
                         <p>선택한 게시글이 삭제됩니다.</p>
                         <div class="delete_btn_container">
-                            <button id="delete_cancel_btn" class="delete_btn">취소</button>
+                            <button class="delete_btn delete_cancel_btn">취소</button>
                             <button id="post_delete_btn" class="delete_btn" value='{{post["_id"]}}'>확인</button>
                         </div>
                     </div>

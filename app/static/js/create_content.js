@@ -92,7 +92,7 @@ function image_show() {
     var image = "";
     images.forEach((i) => {
         image += `<div class="file_preview" id="file_preview" value="file">
-        <img src="`+ i.url +`" alt="Image">
+        <img src="`+ i.url +`" alt="PostImage">
         <span onclick="delete_image(`+ images.indexOf(i) +`)">&times;</span>
         <p class="show_number">${images.indexOf(i) + 1}</p>
         </div>`;
