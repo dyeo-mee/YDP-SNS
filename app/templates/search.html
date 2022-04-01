@@ -9,33 +9,43 @@
     <div class="both_layout_friend search_user_container">
         <h4>계정</h4>
         <div class="search_user_list">
-            {% for user in search_user_dic %}
-            <div class="user_list" id = 'friend_button_area_{{search_user_dic[user]["user_id"]}}'\
-                data-user=' {{ search_user_dic[user]["user_id"] }}' value = "{{ search_user_dic[user]['user_id'] }}" > 
-                <a href="/user/{{search_user_dic[user]['nickname']}}">
-                    <img src="{{search_user_dic[user]['profile_img'][1] }}" alt="" class="user_profile_img">
-                </a>
-                <div class="user_list_name_area">
-                    <a class="user_nickname" href ="/user/{{search_user_dic[user]['nickname']}}" >
-                        {{search_user_dic[user]['nickname']}}
+            {% if search_user_dic|length == 0 %}
+            <div class="empty_content">
+                <span class="empty_txt">검색어에 해당하는 사용자가 없습니다.</span>
+                <img class="empty_user_img" src="../static/img/friends_fill.png" alt="empty_user">
+            </div>
+            {% else %}
+                {% for user in search_user_dic %}
+                <div class="user_list" id = 'friend_button_area_{{search_user_dic[user]["user_id"]}}'\
+                    data-user=' {{ search_user_dic[user]["user_id"] }}' value = "{{ search_user_dic[user]['user_id'] }}" > 
+                    <a href="/user/{{search_user_dic[user]['nickname']}}">
+                        <img src="{{search_user_dic[user]['profile_img'][1] }}" alt="" class="user_profile_img">
                     </a>
-                    <div class="user_name">
-                        {{ search_user_dic[user]['user_name'] }}
+                    <div class="user_list_name_area">
+                        <a class="user_nickname" href ="/user/{{search_user_dic[user]['nickname']}}" >
+                            {{search_user_dic[user]['nickname']}}
+                        </a>
+                        <div class="user_name">
+                            {{ search_user_dic[user]['user_name'] }}
+                        </div>
                     </div>
-                </div>
-            </div> 
-            {% endfor %}
+                </div> 
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
     <div class="both_layout_content">
         <h4>게시물</h4>
-        <!-- jinja if : 해당 검색어에 따른 결과가 없을 경우-->
-
-        <!-- else -->
+        {% if post_dict|length == 0 %}
+        <div class="empty_content">
+            <span class="empty_txt">검색어에 해당하는 게시물이 없습니다.</span>
+            <img class="empty_img" src="../static/img/notes_gray.png" alt="notes">
+        </div>
+        {% else %}
             {% for post in post_dic%}
                 {% include 'post.html' %}
             {% endfor %}
-        <!-- endif -->
+        {% endif %}
     </div>
     <!-- 검색어 db 필터링, js 조건문 별로 다른 버튼 생성 -->
 </div>

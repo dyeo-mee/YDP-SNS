@@ -1154,6 +1154,11 @@ a:visited{color: black}
 #user_friend_empty_txt{
     margin: 40px;
 }
+.empty_user_img{
+    width: 150px;
+    height: 150px;
+    opacity: 25%;
+}
 .empty_img{
     width: 200px;
     height: 200px;
