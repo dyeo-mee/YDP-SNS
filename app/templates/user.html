@@ -2,6 +2,7 @@
 {% block user %}
 <div class="user_container">
     <img src="{{ user['background_img'][1] }}" alt="" class="user_background">
+    <div class="background_parallax"></div>
     <div class="user_profile">
         <div class="profile_container">
             <img src="{{ user['profile_img'][1] }}" alt="" class="profile_image">            
@@ -32,13 +33,12 @@
                 </div>
                 <div class="user_introduce">
                     <p>소개</p>
-                    <div class="user_introduce_text">
-                        {% if user['bio'] == none %}
-                            <!-- 작성된 내용이 없을 경우 -->
-                        {% else %}
-                            {{ user['bio'] }}
-                        {% endif %}
-                    </div>
+                    <!-- 작성된 내용이 없을 경우 -->
+                    {% if user['bio'] == none %}
+                        <textarea class="user_introduce_text" readonly></textarea>
+                    {% else %}
+                        <textarea class="user_introduce_text" readonly>{{ user['bio'] }}</textarea>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -46,28 +46,61 @@
             <div class="both_layout_friend user_friend_list">
                 <div class="friend_container_header">
                     <h3>친구 목록</h3>
-                    {% if session['ide'] == user['nickname'] %}
+                    {% if session['nickname'] == user['nickname'] %}
                     <a href="/friend" id="view_more">더보기</a>
-                    {% endif %}
-                </div>
-                {% for friend in friend_dic %}
-                <div class="user_list"> 
-                    <a href="/user/{{friend_dic[friend]['nickname']}}">
-                        <img src="{{friend_dic[friend]['profile_img'][1] }}" class="user_profile_img">
-                    </a>
-                    <div class="user_list_name_area">
-                        <a class="user_nickname" href ="/user/{{friend_dic[friend]['nickname']}}">
-                            {{friend_dic[friend]['nickname']}}
-                        </a>
-                        <div class="user_name">
-                            {{ friend_dic[friend]['user_name'] }}
+                    {% else %}
+                    <!-- 세션 유저가 아닌 사용자의 user 페이지 친구 목록 -->
+                    <button class="other_user_friend">더보기</button>
+                    <!-- 친구 목록 팝업창 -->
+                    <div class="more_icon_popup_back none">
+                        <div class="more_icon_popup popup_friend">
+                            <div class="popup_friend_header">
+                                <div>친구 목록</div>
+                                <img id="popup_friend_close" class="top_bar_icon" src="../static/img/close.png" alt="close_icon">
+                            </div>
+                            <div style="overflow: auto;">
+                                {% for friend in friend_dic %}
+                                <div class="popup_friend_list"> 
+                                    <a href="/user/{{friend_dic[friend]['nickname']}}">
+                                        <img src="{{friend_dic[friend]['profile_img'][1] }}" class="user_profile_img">
+                                    </a>
+                                    <div class="user_list_name_area">
+                                        <a class="user_nickname" href ="/user/{{friend_dic[friend]['nickname']}}">
+                                            {{ friend_dic[friend]['nickname'] }}
+                                        </a>
+                                        <div class="user_name">
+                                            {{ friend_dic[friend]['user_name'] }}
+                                        </div>
+                                    </div>
+                                </div> 
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                </div> 
-                {% endfor %}
+                    {% endif %}
+                </div>
+                {% if session['nickname'] == user['nickname'] and friend_dic|length == 0 %}
+                <span id="user_friend_empty_txt" class="empty_txt">친구를 검색하고 추가해보세요!</span>
+                {% else %}
+                    {% for friend in friend_dic %}
+                    <div class="user_list"> 
+                        <a href="/user/{{friend_dic[friend]['nickname']}}">
+                            <img src="{{friend_dic[friend]['profile_img'][1] }}" class="user_profile_img">
+                        </a>
+                        <div class="user_list_name_area">
+                            <a class="user_nickname" href ="/user/{{friend_dic[friend]['nickname']}}">
+                                {{friend_dic[friend]['nickname']}}
+                            </a>
+                            <div class="user_name">
+                                {{ friend_dic[friend]['user_name'] }}
+                            </div>
+                        </div>
+                    </div> 
+                    {% endfor %}
+                {% endif %}
             </div>
             <div class="both_layout_content user_content">
-                {% if session['ide'] == user['nickname'] %}
+                {% if session['nickname'] == user['nickname'] %}
                     <div class="user_create_content">
                         <div class="user_create_content_header">
                             <div class="user_img_nickname comment">
@@ -78,13 +111,16 @@
                         </div>
                         <button type="button" class="create_content_btn" onclick="plus();">새로운 게시물 작성하기</button>
                     </div>
-                {% else %}
-                    <!-- session user 아닐 경우 나타나는 user content -->
                 {% endif %}
+                <!-- user content -->
+                {% include 'post.html' %}
             </div>
         </div>
     </div>
 </div>
 <script src="../static/js/user.js" defer="defer"></script>
 <script src="../static/js/create_content.js" defer="defer"></script>
+<script src="../static/js/lazyLoad.js" defer="defer"></script>
+<script type="module" src="../static/js/time_information.js" defer="defer"></script>
+<script type="module" src="../static/js/post.js" defer="defer"></script>
 {% endblock %}

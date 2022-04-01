@@ -1,119 +1,43 @@
 {% extends 'index_base.html' %}
 {% block index %}
-<div class="base_body_margin both_layout_content">
-    <!-- jinja if : 게시물이 없을 경우-->
-    <span class="empty_content">아직 게시물이 없습니다</span>
-    <!-- else -->
-    <div id="content" class="index_content">
-        <!-- page, session 유저, 권한에 따라 조건문 변경 -->
-        <div class="content">
-            <div class="content_header">
-                <div class="user_img_nickname">
-                    <a href="">
-                        <img src="../static/img/user_profile_gray.png" alt="" class="content_user_img">
-                    </a>
-                    <div>
-                        <a href="" class="author_nickname">nickname</a>
-                        <p class="create_time">00시간 전</p>
-                    </div>
-                </div>
-                <!-- ver 1.0에선 session user만 버튼 노출 -->
+<div class="index">
+    <div id="index_content" class="base_body_margin both_layout_content">
+        {% if post_dic|length == 0 %}
+        <!-- 아직 게시물이 없을 경우-->
+        <div class="empty_content">
+            <span class="empty_txt">친구를 추가하고 첫 게시물을 작성해보세요!</span>
+            <img class="empty_img" src="../static/img/notes_gray.png" alt="notes">
+        </div>
+        {% else %}
+            {% include 'post.html' %}
+        {% endif %}
+    </div>
+    <div id="index_friend_list" class="both_layout_friend">
+        <div id="index_friend_container" class="friend_container">
+            <div class="friend_container_header">
+                <h3>친구 목록</h3>
                 {% if session['ide'] == session['nickname'] %}
-                <img src="../static/img/more.png" alt="" class="content_icon more_icon">
-                <div class="more_icon_popup_back none">
-                    <div class="more_icon_popup">
-                        <button>게시글 수정</button>
-                        <button>게시글 삭제</button>
-                        <button class="more_icon_cancel">취소</button>
-                    </div>
-                </div>
+                <a href="/friend" id="view_more">더보기</a>
                 {% endif %}
             </div>
-            <textarea class="content_text" id="" disabled>text</textarea>
-            <div class="content_image">
-                img 슬라이드 구현
-            </div>
-            <div class="content_footer">
-                <div class="content_reaction">
-                    <!-- 하트 클릭 여부에 따라 count +1, -1 -->
-                    <img src="../static/img/like.png" alt="" class="content_icon">
-                    <p class="content_like">00개</p>
-                    <!-- 좋아요 갯수 클릭하면 나타나는 영역 -->
-                    <div class="like_container_back none">
-                        <div class="like_container">
-                            <div class="like_container_header">
-                                <div >좋아요 목록</div>
-                                <img src="../static/img/close.png" alt="" class="content_icon like_close">
-                            </div>
-                            <div class="like_user_list_container">
-                                <!-- jinja for -->
-                                <div class="like_user_list">
-                                    <a href="">
-                                        <img src="../static/img/user_profile_gray.png" alt="" class="content_user_img">
-                                    </a>
-                                    <a href="" class="like_user_nickname">nickname</a>
-                                </div>
-                                <!-- endfor -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content_reaction">
-                    <img src="../static/img/chat.png" alt="" class="content_icon">
-                    <p class="content_comment">00개</p>
-                </div>
-            </div>
-            <!-- 댓글 클릭하면 나타나는 영역 -->
-            <div class="content_comment_container none">
-                <div class="comment_list">
-                    <!-- jinja for -->
-                    <div class="user_img_nickname">
-                        <img src="../static/img/user_profile_gray.png" alt="" class="comment_user_img">
-                        <div class="user_comment">
-                            <div class="comment_nickname_time">
-                                <p class="comment_nickname">nickname</p>
-                                <p class="comment_time">00시간 전</p>
-                            </div>
-                            <p class="comment_txt">유저가 남긴 댓글</p>
-                        </div>
-                    </div>
-                    <!-- endfor -->
-                </div>
-                <form action="" class="comment_form">
-                    <textarea class="comment_textarea" onkeyup="auto_height();" style="height: 20px;"></textarea>
-                    <button type="submit">댓글 달기</button>
-                </form>
-            </div>
-        </div>
-        <!-- endfor -->
-    </div>
-    <!-- endif -->
-</div>
-<div id="index_friend_list" class="both_layout_friend">
-    <div class="friend_container">
-        <div class="friend_container_header">
-            <h3>친구 목록</h3>
-            {% if session['ide'] == session['nickname'] %}
-            <a href="/friend" id="view_more">더보기</a>
-            {% endif %}
-        </div>
-        {% for user in friend_dic %}
-            <div class="user_list">
-                <a href="/user/{{friend_dic[user]['nickname']}}">
-                    <img src="{{ friend_dic[user]['profile_img'][1] }}" alt="" class="search_user_image">
-                </a>
-                <div class="user_list_name_area">
-                    <a class="user_nickname" href="/user/{{friend_dic[user]['nickname']}}">
-                        {{ friend_dic[user]['nickname'] }}
+            {% for user in friend_dic %}
+                <div class="user_list">
+                    <a href="/user/{{friend_dic[user]['nickname']}}">
+                        <img src="{{ friend_dic[user]['profile_img'][1] }}" alt="" class="search_user_image">
                     </a>
-                    <div class="user_name">
-                        {{ friend_dic[user]['user_name'] }}
+                    <div class="user_list_name_area">
+                        <a class="user_nickname" href="/user/{{friend_dic[user]['nickname']}}">
+                            {{ friend_dic[user]['nickname'] }}
+                        </a>
+                        <div class="user_name">
+                            {{ friend_dic[user]['user_name'] }}
+                        </div>
                     </div>
-                </div>
-            </div> 
-        {% endfor %}
+                </div> 
+            {% endfor %}
+        </div>
     </div>
 </div>
 <script src="../static/js/index.js" defer="defer"></script>
-<script src="../static/js/content.js" defer="defer"></script>
+<script type = 'module' src="../static/js/post.js" defer="defer"></script>
 {% endblock %}

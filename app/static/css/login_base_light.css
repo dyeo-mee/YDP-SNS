@@ -148,26 +148,59 @@ h4{
         height: 300px;
     }
 }
-.join_email_info{
-    right: 0;
+.info_text{
+    text-align: right;
     font-size: 13px;
     color: gray;
 }
-@media (max-width: 767px) {
-    #join_pw2{
-        margin-bottom: 0;
-    }
+#join_pw2{
+    margin-bottom: 10px;
 }
 @media (max-width: 767px) {
     .join_nickname{
         margin-top: 8px;
     }
 }
-#nickname{
+.name::placeholder{
+    opacity: 50%;
+}
+#input_nickname{
     padding: 0 25px;
     text-align: center;
 
     box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.08);
+}
+#nickname_infoBox{
+    margin: 0;
+    padding: 2px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.nickname_check{
+    margin: 0;
+    height: 0;
+    max-height: 30px;
+    font-size: 14px;
+    text-align: center;
+    overflow: hidden;
+}
+.check{
+    -webkit-animation: check 3s;
+}
+@-webkit-keyframes check {
+    0% {height: 0px;}
+    50% {height: 30px;}
+    100% {height: 0px;}
+}
+.check_btn{
+    padding: 3px 13px;
+    cursor: pointer;
+    font-size: 14px;
+
+    border-radius: 3px;
+    background-color: #FFF;
+    border: solid 1px #E1E1E1;
 }
 #user_name{
     padding: 0 25px;
@@ -187,7 +220,14 @@ h4{
         left: 28%;
     }
 }
+.join_success_container h3{
+    margin-bottom: 40px;
+    font-weight: 500;
+}
 /* reset password */
+.pw_reset_container{
+    width: 360px;
+}
 #certification_send{
     margin-bottom: 10px;
 }
@@ -224,14 +264,20 @@ h4{
     display: flex;
     flex-direction: row;
     align-items: center;
-}
-#password_reset{
-    transition: all .5s;
+    opacity: 0;
 }
 .certification_img{
     width: 30px;
     height: 30px;
     margin: 0 5px;
+}
+.opacity{
+    -webkit-animation: opacity 3s;
+}
+@-webkit-keyframes opacity{
+    0%{opacity: 0;}
+    20%{opacity: 1;}
+    100%{opacity: 0;}
 }
 .send_btn{
     margin-bottom: 10px;
@@ -246,14 +292,14 @@ h4{
 
     border: solid 1px lightgray;
 }
+.password_rule{
+    font-size: 14px;    
+}
 #reset_pw2{
     margin-bottom: 0;
 }
 .none{
     display: none;
-}
-.password_rule{
-    font-size: 12px;
 }
 #change_pw_btn{
     margin-top: 15px;

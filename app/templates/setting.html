@@ -35,12 +35,19 @@
                 </form>
                 <form action="/setting" method="post" name="setting_form_ide">
                     <p class="setting_header">닉네임 변경</p>
-                    <input type="text" placeholder="새로운 닉네임" name="setting_input_ide">
-                    <button type="submit" class="setting_submit_btn" name="setting_button_ide">닉네임 저장</button>
+                    <input id="input_nickname" type="text" placeholder="새로운 닉네임" name="setting_input_ide" data-nickname_list="{{nickname_list}}">
+                    <p class="nickname_check"></p>
+                    <button type="button" class="setting_label check_btn">중복 검사</button>
+                    <button type="submit" class="setting_submit_btn nickname_submit" name="setting_button_ide" disabled>닉네임 저장</button>
                 </form>
                 <form action="/setting" method="post" name="setting_form_bio">
                     <p class="setting_header">소개글 수정</p>
-                    <input type="text"placeholder="새로운 소개글" name="setting_input_bio" maxlength="140">
+                    {% if session_user['bio'] == none %}
+                    <!-- 작성된 내용이 없을 경우 -->
+                    <textarea id="setting_bio" type="text" name="setting_input_bio" placeholder="새로운 소개글"></textarea>
+                    {% else %}
+                    <textarea id="setting_bio" type="text" name="setting_input_bio">{{ session_user['bio'] }}</textarea>
+                    {% endif %}
                     <button type="submit" class="setting_submit_btn" name="setting_button_bio">소개글 저장</button>
                 </form>
             </div>
@@ -69,14 +76,51 @@
                     </div>
                 </div>
                 <div class="account_container">
-                    <a href="/logout" id="setting_logout">로그아웃</a>
-                    <div class="withdrawal">탈퇴</div>
+                    <button id="setting_logout">로그아웃</button>
+                    <div>
+                        <P class="withdrawal">탈퇴</p>
+                        <div id="withdrawal_popup_back" class="more_icon_popup_back none">
+                            <div class="more_icon_popup withdrawal_container">
+                                <p class="withdrawal_info">
+                                    회원님의 개인정보 및 작성 된 게시물, 활동과 관련된 모든 정보는<br>
+                                    탈퇴 즉시 파기되며 복구할 수 없습니다.
+                                </p>
+                                <div class="withdrawal_info2">
+                                    <p id="warning" class="">정말로 탈퇴를 진행하시겠습니까?</p>
+                                    <div class="withdrawal_button">
+                                        <button id="withdrawal_cancel_btn" class="withdrawal_btn">취소</button>
+                                        <button id="withdrawal_btn" class="withdrawal_btn">확인</button>
+                                    </div>
+                                </div>
+                                <div class="withdrawal_step">
+                                    <p>개인정보 보호를 위해 아래의 인증 절차를 진행해주세요.</p>
+                                    <input type="text" class="withdrawal_input idpw" id="user_id" placeholder="ID">
+                                    <input type="password" class="withdrawal_input idpw" id="user_password" placeholder="Password">
+                                    <div style="display: flex;">
+                                        <p style="padding-right: 5px;">상기 내용을 확인하였으며,</p><p style="color: #0084ff;">탈퇴를 진행합니다.</p>
+                                    </div>
+                                    <input type="text" class="withdrawal_input txt" id="confirm" placeholder="파란 글씨에 해당하는 부분을 입력해주세요.">
+                                    <div class="withdrawal_button">
+                                        <button id="withdrawal_cancel_btn" class="withdrawal_btn" type='button'>취소</button>
+                                        <button id="withdrawal_submit" class="withdrawal_btn" type="submit">확인</button>
+                                    </div>
+                                </div>
+                                <!-- <div class="delay_animation"></div> -->
+                                <div class="withdrawal_complete">
+                                    <p>탈퇴가 정상적으로 완료되었습니다.</p>
+                                    <p>그동안 서비스를 이용해주셔서 감사합니다.</p>
+                                    <p id="move_login">잠시 후 로그인 페이지로 이동</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="setting_version">버전 정보 Ver 1.0</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!-- <script src="../static/js/setting.js" defer="defer"></script> -->
 <script type="module" src="../static/js/setting.js" defer="defer"></script>
 <script type="module" src="../static/js/check_password.js"></script>
 {% endblock %}

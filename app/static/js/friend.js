@@ -1,7 +1,29 @@
-// 친구 요청 수락 & 거절, 삭제 버튼
+// 추천 친구 - 함께아는 친구
+$('html').click(function(e){
+    let recommended = document.querySelectorAll('.recommended_friend');
+    console.log(e.target)
+    recommended.forEach(friend => {
+        // 함께아는 친구 목록 클릭
+        if (e.target == friend) {
+            let friend_popup = $(friend).next();
+            friend_popup.attr('class','more_icon_popup_back');
+            document.querySelector(".body").className = "body scroll_hidden";
+            console.log("friend list")
+        }  //close 버튼 혹은 팝업 영역 외 클릭
+        else if (e.target.className == 'top_bar_icon' || e.target.className == 'more_icon_popup_back') {
+            let friend_popup = $(friend).next();
+            friend_popup.attr('class','more_icon_popup_back none');
+            document.querySelector(".body").className = "body";   
+            console.log("close modal")
+        }
+        else { //팝업창 영역 클릭
+            console.log('modal area')
+        };
+     });
+});
 
-// _btn으로 끝나는 id 요소를 클릭한 경우
-$('[id$=_btn]').click(function(){
+// request_btn인 class 요소를 클릭한 경우
+$('.request_btn').click(function(){
     // 클릭한 버튼에 해당하는 div 요소를 가져옴
     var div = $(this).parent()
     // div의 모든 자식 요소(button)

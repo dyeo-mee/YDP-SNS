@@ -59,9 +59,9 @@ function create_btn(){
                       "type": "button", 
                       "id": "reject_btn",
                       "class": "request_btn",
-                      "value": "요청 삭제"
+                      "value": "요청 취소"
                     });
-                $(newText).text('요청 삭제');
+                $(newText).text('요청 취소');
 
                 create_div.appendChild(newText);
                 let c_url = 'friend_button_area_'+user
@@ -109,11 +109,14 @@ $('[id^=_button_area]').click(function(){
         success: function(data){
             // alert('성공! 데이터 값:' + data.result2['user']+' '+data.result2['id']+" " + data.result2['val'])
             if (val =='친구 요청') {
-                val = '요청 삭제'
-                $(btn).text('요청 삭제');
+                val = '요청 취소'
+                $(btn).text('요청 취소');
                 $(btn).attr('id', 'reject_btn')
 
-            } else if (val == '요청 삭제') {
+                var socket = io.connect('http://' + document.domain + ':' + location.port+'/');
+                socket.emit('friend_request', postdata);
+
+            } else if (val == '요청 취소') {
                 val = '친구 요청'
                 $(btn).text('친구 요청');
                 $(btn).attr('id', 'accept_btn')

@@ -1,5 +1,11 @@
 <!doctype html>
-
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <script>
+            alert("{{ messages[-1] }}")
+        </script>
+    {% endif %}
+{% endwith %}
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +23,17 @@
     <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
     <!-- jquery -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- SoketIo -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script> -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+        session_nickname = "{{ session['nickname'] }}"
+        var socket = io.connect('http://' + document.domain + ':' + location.port+'/');
+
+        socket.on('connect', function(msg) {
+            console.log(msg)
+        });
+    </script>
 </head>
 <body class="body">
     <div class="index_base_topbar">
@@ -28,12 +45,12 @@
                 <input type="text" name='search' placeholder="검색"  class="search_input">
             </div>
             <button type="submit" class="search_btn" name="search_btn" value="topbar_search">
-                <img class="top_bar_icon" src="../static/img/search.png" alt="search_icon">
+                <img class="search_icon" src="../static/img/search.png" alt="search_icon">
             </button>
         </form>
         <div class="navigation_icon">
             <a href="/"><img class="top_bar_icon" src="../static/img/home.png" alt="home_icon"></a>
-            <a href="/friend"><img class="top_bar_icon" src="../static/img/friends.png" alt="friend_icon"></a>
+            <a href="/friend" id="friend_a"><img id="friend_icon" class="top_bar_icon" src="../static/img/friends.png" alt="friend_icon"></a>
             <div class="content_popup">
                 <button id="plus_icon_btn"><img class="top_bar_icon" src="../static/img/plus.png" alt="plus_icon"></button>
                 <div class="plus_background none">
@@ -42,18 +59,18 @@
                             <div class="popup_header">
                                 <button type="button" id="close_icon_btn"><img class="top_bar_icon close" src="../static/img/close.png" alt="close_icon"></button>
                                 <span>게시물 작성</span>
-                                <button type="submit" onclick="location.href='/content_submit'" name="content_submit" class="popup_submit_btn" formmethod="post">공유하기</button>
+                                <button type="button" name="content_submit" class="popup_submit_btn" formmethod="post">공유하기</button>
                                 <!-- <label for="popup_submit" class="popup_submit_label"></label> -->
                             </div>
                             <div class="popup_txt">
-                                <textarea id="popup_textarea" name="content_txt" placeholder="내용을 입력 해주세요."></textarea>
+                                <textarea id="popup_textarea" name="content_txt" placeholder="내용을 입력 해주세요. (#hashtag @mention)"></textarea>
                             </div>
                             <span>업로드 할 파일 선택</span>
                             <div class="popup_file">
                                 <div class="popup_file_input">
-                                    <input type="file"  id="popup_input_file" name="content_file" onChange="image_select()" multiple >
+                                    <input type="file"  multiple="'multiple" id="popup_input_file" name="content_file[]" onChange="image_select()" >
                                     <button type="button" id="input_file_btn" onClick="document.getElementById('popup_input_file').click()" class="input_file_btn">                                
-                                        파일 선택하기
+                                        파일 선택하기{{ test }}
                                     </button>
                                 </div>
                                 <div class="" id="file_container">
@@ -64,16 +81,88 @@
                     </form>
                 </div>
             </div>
-            <a href="/"><img class="top_bar_icon" src="../static/img/notification.png" alt="notice_icon"></a>
+            <div class="top_bar_notice">
+                <div id="notice_dot" class="notice_dot none"></div>
+                <img class="top_bar_icon notice_icon" src="../static/img/notification.png" alt="notice_icon">
+            </div>
+            <!-- notice modal -->
+            <div id="notice_container" class="none notice_popup user_popup">
+                <div class="notice_list" session_nickname = "{{ session['nickname'] }}", session_id = "{{ session['login'] }}" notice_check = "{{ session['notice_check'] }}" notice="{{ session['notices'] }}">
+                    {% if session['notice']|length == 0 %}
+                    <p class="notice_none" value="{{ notice|length }}">새로운 알림이 없습니다.</p>
+                    {% else %}
+                        {% for notice in session['notice']%}
+                            {% if notice['kind'] == 'request_friend' %}
+                            <div class="notice_item friend_notice">
+                                <img class="notice_img friend_notice_img" src="{{ notice['notice_user']['profile_img'] }}" alt="">
+                                <div class="notice_content">
+                                    <p class="notice_txt">
+                                        <a class="notice_a notice_nickname" href="/user/{{ notice['notice_info']['nickname'] }}">{{ notice['notice_info']['nickname'] }}</a>
+                                        님이 친구 요청을 보냈습니다.
+                                        <!-- 시간 -->
+                                        <p class="notice_a notice_time" value = "{{ notice['time'] }}"></p>
+                                    </p> 
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="post_notice_container">
+                                <div class="notice_item post_notice">
+                                    {% if notice['notice_info']['notice_img_kind'] == 'post_img' %}
+                                    <img class="post_notice_img post_notice_click" src="{{ notice['notice_info']['notice_img_data'] }}" alt="" data-id="{{ notice['_id'] }}">
+                                    <p class="notice_txt">
+                                        <a class="notice_a notice_nickname" href="/user/{{ notice['notice_info']['nickname'] }}">{{ notice['notice_info']['nickname'] }}</a>
+                                        <!-- 좋아요, 댓글, 태그에 따라 다른 내용 -->
+                                        {% if notice['kind'] == 'like'%}
+                                            님이 게시물을 좋아합니다.
+                                        {% elif notice['kind'] == 'reply' %}
+                                            님이 답글을 달았습니다.
+                                        {% elif notice['kind'] == 'comment' %}
+                                            님이 댓글을 달았습니다.
+                                        {% else %}
+                                            님이 회원님을 멘션 했습니다.
+                                        {% endif %}
+                                        <!-- 시간 -->
+                                        <p class="notice_a notice_time" value = "{{ notice['time'] }}"></p>
+                                    </p>
+                                    {% else %}
+                                    <p class="notice_txt">"
+                                        <a id="post_txt" class="notice_a post_notice_click" data-id="{{ notice['_id'] }}">{{ notice['notice_info']['notice_img_data'] }}</a>
+                                        " 게시물에
+                                        <a class="notice_a notice_nickname" href="/user/{{ notice['notice_info']['nickname'] }}">{{ notice['notice_info']['nickname'] }}</a>
+                                        <!-- 좋아요, 댓글, 태그에 따라 다른 내용 -->
+                                        {% if notice['kind'] == 'like'%}
+                                            님이 게시물을 좋아합니다.
+                                        {% elif notice['kind'] == 'reply' %}
+                                            님이 답글을 달았습니다.
+                                        {% elif notice['kind'] == 'comment' %}
+                                            님이 댓글을 달았습니다.
+                                        {% else %}
+                                            님이 회원님을 언급했습니다.
+                                        {% endif %}
+                                        <!-- 시간 -->
+                                        <p class="notice_a notice_time" value = "{{ notice['time'] }}"></p>
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <!-- post notice modal -->
+                                {% include 'postNotice.html' %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div id="notice_triangle" class="triangle none"></div>
             <!-- <button type="button" id="" class="top_bar_user"></button> -->
             <img src="{{ session['profile_img'] }}" class='top_bar_user' alt="">
             <!-- 프로필,로그아웃,설정 팝업창 -->
             <div id="user_popup" class="user_popup none">
-                <a href="/user/{{session['nickname']}}">프로필 이동</a>
-                <a href="/setting">설정</a>
-                <a href="/logout">로그아웃</a>
+                <a href="/user/{{ session['nickname'] }}" class="user_popup_a">프로필 이동</a>
+                <!-- <a href="/testUser/{{ session['nickname'] }}" class="user_popup_a">프로필 이동</a> -->
+                <a href="/setting" class="user_popup_a">설정</a>
+                <a href="/logout" style="color: red;" class="user_popup_a">로그아웃</a>
             </div>
-            <div class="triangle none"></div>
+            <div id="triangle" class="triangle none"></div>
         </div>
     </div>
     </div>
@@ -99,4 +188,14 @@
     </div>
 </body>
 <script src="../static/js/create_content.js" defer="defer"></script>
-<script src="../static/js/index_base.js" defer="defer"></script>
+<script src="../static/js/lazyLoad.js" defer="defer"></script>
+<!-- <script src="../static/js/post.js" defer="defer"></script> -->
+<script type="module" src="../static/js/index_base.js" defer="defer"></script>
+<script type="module" src="../static/js/time_information.js" defer="defer"></script>
+<script type="module" src="../static/js/create_comment.js" defer="defer"></script>
+
+<!-- <script src="../static/js/postNotice.js" defer="defer"></script> -->
+<script type="module" src="../static/js/tmp_postNotice.js" defer="defer"></script>
+<!-- <script type="module" src="../static/js/create_comment.js" defer="defer"></script> -->
+
+

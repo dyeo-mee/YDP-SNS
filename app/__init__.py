@@ -1,19 +1,32 @@
 from flask import Flask
 import pymongo
 import boto3
+from flask_socketio import SocketIO
 
-app = Flask(__name__)
+socketio = SocketIO(logger=False,engineio_logger=False)
 
-app.config["SECRET_KEY"] = "sns"
-app.config['JSON_AS_ASCII'] = False
-# 메일 인증 기능
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USERNAME"] = "ydpsns.project@gmail.com" 
-app.config["MAIL_PASSWORD"] = "gqizwnzhwaxwrjjj"
-app.config["MAIL_USE_TLS"] = True 
+def create_app(debug=False):
+    app = Flask(__name__)
+    app.debug = debug
+    app.config["SECRET_KEY"] = "sns"
+    app.config['JSON_AS_ASCII'] = False
+    # 메일 인증 기능
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config["MAIL_PORT"] = 587
+    app.config["MAIL_USERNAME"] = "ydpsns.project@gmail.com" 
+    app.config["MAIL_PASSWORD"] = "gqizwnzhwaxwrjjj"
+    app.config["MAIL_USE_TLS"] = True 
 
-conn = pymongo.MongoClient("mongodb://root:study111@13.125.71.134:27017/root?authSource=admin")
+    socketio.init_app(app)
+
+    from app.events import socketio_init
+    socketio_init(socketio)
+    
+    return app
+    
+app = create_app(debug=True)
+
+conn = pymongo.MongoClient("mongodb://root:study111@15.164.96.105:27017/root?authSource=admin")
 from app import views
 
 

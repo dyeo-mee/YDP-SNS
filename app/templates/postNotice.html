@@ -1,0 +1,184 @@
+<div id="notice_modal" class="notice_modal_background" data-id="{{ notice['_id'] }}">
+    <div class="post_notice_modal" id="content" session_nicnkname = "{{ session['nickname']}}" create_user_nickname = "{{ notice['post_info']['create_user_nickname']}}">
+        <button type="button" id="notice_modal_close"><img id="notice_modal_close_img" class="top_bar_icon close" src="../static/img/close.png" alt="close_icon"></button>
+        <!-- image -->
+        <div class="post_notice_area">
+            <div class="content_image_viewer">
+                <div id="notice_img_container" class="content_image_container">
+                    <button class="img_arrow_btn left_arrow"><img id="left_arrow" src="../static/img/left_arrow.png" alt=""></button>
+                    <button id="post_notice_arrow" class="img_arrow_btn right_arrow"><img id="right_arrow" src="../static/img/right_arrow.png" alt=""></button>
+                    <div id="notice_img_album" class="img_album" data-length="{{ notice['post_info']['images']|length }}">
+                        {% for i in notice['post_info']['images'] %}
+                        <img src="{{ i }}" data-src="{{ i }}" alt="" class="content_image" value="{{ notice['post_info']['images']|length }}">
+                        {% endfor %}
+                    </div>
+                    <p id="post_notice_img_num" class="img_number" value="{{ notice['post_info']['images']|length }}" img="{{ notice['post_info']['images']  }}">1 / {{  notice['post_info']['images']|length  }}</p>
+                </div>
+            </div>
+            <!-- txt & comment  -->
+            <div class="notice_post_txt_comment">
+                <div class="content_txt_comment">
+                    <!-- user img & nickname -->
+                    <div id="post_notice_header" class="content_header">
+                        <div id="notice_img_nickname" class="user_img_nickname">
+                            <a href="/user/{{ notice['post_info']['create_user_nickname'] }}" class="notice_a">
+                                <img src="{{ notice['post_info']['create_user_profile'] }}" alt="" class="content_user_img">
+                            </a>
+                            <div>
+                                <a href="" class="author_nickname notice_a">{{ notice['post_info']['create_user_nickname'] }}</a>
+                                <p class="create_time" value="{{ notice['post_info']['create_time'] }}"></p>
+                            </div>
+                        </div>
+                        <!-- more icon -->
+                        {% if session['nickname'] == notice['post_info']['create_user_nickname'] %}
+                        <img src="../static/img/more.png" alt="" class="content_icon more_icon">
+                        <div class="more_icon_popup_back none">
+                            <div class="more_icon_popup">
+                                <button id="post_update_btn" class="more_popup_btn" >게시글 수정</button>
+                                <form action="/content_submit/{{ notice['post_info']['_id'] }}" class="update_form" method="POST">
+                                    <textarea class="update_textarea hashtag" name="update_textarea" value="{{ notice['post_info']['text'] }}">{{ notice['post_info']['text'] }}</textarea>
+                                    <div class="update_btn_container">
+                                        <button class="update_btn update_apply_btn" type="submit">저장</button>
+                                        <button class="update_btn notice_update_cancel_btn" type="button">작성 취소</button>
+                                    </div>
+                                </form>
+                                <button id="post_delete" class="more_popup_btn">게시글 삭제</button>
+                                <div class="post_delete_container">
+                                    <p>선택한 게시글이 삭제됩니다.</p>
+                                    <div class="delete_btn_container">
+                                        <button class="delete_btn delete_cancel_btn">취소</button>
+                                        <button id="post_delete_btn" class="delete_btn" value='{{ notice["post_info"]["_id"] }}'>확인</button>
+                                    </div>
+                                </div>
+                                <button class="more_icon_cancel more_popup_btn">취소</button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="txt_comment_scroll">
+                        <!-- post txt (hashtag) -->
+                        <div class="content_text" id="" value="{{ notice['post_info']['split_text'] }}">
+                            {% for text in notice['post_info']['split_text'] %}
+                                {% if '#' in text %}
+                                <a href="{{ url_for('search', search = text ) }}" id="hashtag" class="notice_a">{{ text }}</a>
+                                {% elif '@' in text %}
+                                <a href="" id="mention" class="notice_a">{{ text }}</a>
+                                {% elif '\n' in text %}
+                                <br>
+                                {% else %}
+                                <span>{{ text }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <!-- reaction -->
+                        <div class="content_footer">
+                            <!-- 좋아요 기능 -->
+                            <div class="content_reaction">
+                                {% if notice['post_info']['_id']|string in session['like'] %}
+                                <img src="../static/img/color_like.png" alt="" class="content_icon" id="like_icon" value="empty"\
+                                    post_id = "{{ notice['post_info']['_id'] }}">
+                                {% else %}
+                                <img src="../static/img/empty_like.png" alt="" class="content_icon" id="like_icon" value="color"\
+                                    post_id = "{{ notice['post_info']['_id'] }}">
+                                {% endif %}
+                                <p class="content_like" id="content_like">{{ notice['post_info']['like']|length }} 개</p>
+                                <!-- 좋아요 갯수 클릭하면 나타나는 영역 -->
+                                <div class="like_container_back none">
+                                    <div class="like_container">
+                                        <div class="like_container_header">
+                                            <div >좋아요 목록</div>
+                                            <img src="../static/img/close.png" alt="" class="content_icon like_close">
+                                        </div>
+                                        <div class="like_user_list_container">
+                                            {% for like_user in notice['post_info']['like'] %}
+                                            <div class="like_user_list" value= "{{ like_user['nickname'] }}">
+                                                <a href="/user/{{ like_user['nickname'] }}" class="notice_a">
+                                                    <img src="{{ like_user['profile_img'][1] }}" alt="" class="content_user_img">
+                                                </a>
+                                                <a href="/user/{{ like_user['nickname'] }}" class="notice_a like_user_nickname">{{ like_user['nickname'] }}</a>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 댓글 기능 -->
+                            <div class="content_reaction comment">
+                                <img src="../static/img/chat.png" alt="" class="content_icon" post_id="{{ notice['post_info']['_id'] }}">
+                                <p class="content_comment" post_id="{{ notice['post_info']['_id'] }}">{{ notice['post_info']['comment'] }}개</p>
+                            </div>
+                        </div>
+                        <div class="post_notice_comment_list" session_user="{{ session['nickname'] }}">
+                            <!-- 댓글 영역 -->
+                            {% for comment in notice['post_info']['comment_info']|sort(attribute='comment_time', reverse = True) %}
+                            <div class="post_notice_comment">
+                                <div id="post_notice_comment_header" class="user_img_nickname" value="{{ session[nickname] }}" comment_id = "{{ notice['post_info']['comment_info']['_id']}}">
+                                    <a href="/user/{{ comment['comment_user']['nickname'] }}" class="notice_a">
+                                        <img src="{{ comment['comment_user']['profile_img'][1] }}" alt="" class="comment_user_img">
+                                    </a>
+                                    <div class="notice_user_comment">
+                                        <div class="user_comment">
+                                            <div class="comment_nickname_time">
+                                                <p class="comment_nickname">{{ comment['comment_user']['nickname'] }}</p>
+                                                <p class="comment_time" value="{{ comment['comment_time'] }}"></p>
+                                                <button class="notice_recomment notice_reply" value="{{ comment['comment_user']['nickname'] }}" comment_id = "{{ comment['_id']}}">답글 달기</button>
+                                                {% if comment['comment_user']['nickname'] == session['nickname'] %}
+                                                    <button class="notice_recomment notice_delete_comment" value="{{ session[nickname ]}}" comment_id="{{ comment['_id'] }}">댓글 삭제</button>
+                                                {% endif %}
+                                            </div>
+                                            <div class="comment_txt" id="" value="{{ comment['comment'] }}">
+                                                {% for text in comment['comment'] %}
+                                                    {% if '@' in text %}
+                                                    <a href="" id="mention" class="notice_a">{{ text }}</a>
+                                                    {% else %}
+                                                    <span>{{ text }}</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% if comment['reply_list']|length > 0 %}
+                                        <button class="notice_recomment notice_reply_show">답글 보기</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 답글 보기 누르면 나타나는 영역 -->
+                            <div class="reply_container" comment_id="{{ comment['_id'] }}">
+                                {% for reply in comment['reply_list']%}
+                                <div class="reply_item">
+                                    <img src="{{ reply['reply_user']['profile_img'][1] }}" alt="" class="comment_user_img">
+                                    <div class="user_comment">
+                                        <div class="comment_nickname_time">
+                                            <p class="comment_nickname">{{ reply['reply_user']['nickname'] }}</p>
+                                            <p class="comment_time" value="{{reply['reply_time']}}"></p>
+                                            {% if reply['reply_user']['nickname'] == session['nickname'] %}
+                                                <button class="recomment notice_delete_reply" value="{{ session[nickname ]}}">답글 삭제</button>
+                                            {% endif %}
+                                        </div>
+                                        <p class="comment_txt">유저가 남긴 댓글</p>
+                                        <div class="comment_txt" id="" value="{{ reply['reply'] }}">
+                                            {% for text in reply['reply'] %}
+                                                {% if '@' in text %}
+                                                <a href="" id="mention" class="notice_a">{{ text }}</a>
+                                                {% else %}
+                                                <span>{{ text }}</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- 댓글 ajax 전송 부분 -->
+                        <div class="comment_form" value ="{{ notice['post_info']['_id'] }}">
+                            <textarea class="comment_textarea"></textarea>
+                            <button class="notice_comment_submit" type="submit">댓글 달기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
