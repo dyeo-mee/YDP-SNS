@@ -42,10 +42,10 @@ export default function indicate_time (time) {
     else if (post_time < 604800000){ //6일 까지만 일 단위
         $(time).text(d+"일 전");
     }
-    else if (y = 0){ //일주일 이후 부터 업로드 월,일 단위
+    else if (y = 1){ //일주일 이후 부터 업로드 월,일 단위
         $(time).text(split_time[1]+"월 "+split_time[2]+"일");
     }
-    else if (y >= 1){ //해가 바뀌면 업로드 년,월,일 단위
+    else if (y > 1){ //해가 바뀌면 업로드 년,월,일 단위
         $(time).text(split_time[0]+"년 "+split_time[1]+"월 "+split_time[2]+"일");
     }
 }

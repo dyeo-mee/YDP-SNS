@@ -254,8 +254,15 @@ def search():
     session_request_list[''] = [user['request_user'] for user in col_request_friend.find({'user_id': session['login']})]
     session_request_list = json.dumps(session_request_list, ensure_ascii = False)
 
-    # search_post = col_post.find({'hash_tag': {'$all': [search]}})
-    search_post = list(col_post.find({'hashtag': search}))
+    # search_post = col_post.find({'hashtag': {'$all': [search]}})
+    # search_post = list(col_post.find({'hashtag': search}))
+    print(search[1:])
+    search_post = []
+    # for post in col_post.find({'hashtag': { '$all': [search[1:]]}}):
+    for post in col_post.find({'hashtag':[search[1:]]}):
+        post['_id'] = str(post['_id'])
+        search_post.append(post)
+
     return render_template('search.html', search = search, search_user_dic=search_user_dic, search_user_id=search_user_id,\
                  session_friend_list=session_friend_list, session_request_list=session_request_list, post_dic = search_post)
 
@@ -288,6 +295,14 @@ def content_submit():
 
     hash_tag = [h[1:] for h in text if len(h) and h[0] == '#']
 
+    for i in range(len(text)):
+        if text[i][-1] == '\r':
+            text[i] = text[i][:-1]
+
+    for i in range(len(hash_tag)):
+        if hash_tag[i][-1] == '\r':
+            hash_tag[i] = hash_tag[i][:-1]
+
     col_post.insert_one(
         {'create_user': session['login'],
         'create_user_nickname': session['nickname'],
@@ -317,6 +332,14 @@ def content_update_submit(post_id):
             text[-1] = text[-1][:-1]
             text.append('\n')
     hash_tag = [h[1:] for h in text if len(h) and h[0] == '#']
+
+    for i in range(len(text)):
+        if text[i][-1] == '\r':
+            text[i] = text[i][:-1]
+
+    for i in range(len(hash_tag)):
+        if hash_tag[i][-1] == '\r':
+            hash_tag[i] = hash_tag[i][:-1]
         
     col_post.update_one(
         {'_id': ObjectId(post_id)},
@@ -730,53 +753,53 @@ def user_secession():
     data = request.get_json()
     user = col_user.find_one({'user_id':data['id']})
     if bcrypt.check_password_hash(user['password'], data['pw']):
-        # # 친구 요청 collection에서 해당 user가 포함된 document 제거
-        # col_request_friend.delete_many(
-        #     {'$or': [{'user_id': user['user_id']}, {'request_user': user['user_id']}]}
-        # )
+        # 친구 요청 collection에서 해당 user가 포함된 document 제거
+        col_request_friend.delete_many(
+            {'$or': [{'user_id': user['user_id']}, {'request_user': user['user_id']}]}
+        )
 
-        # # 알림 collection에서 해당 user가 포함된 document 제거
-        # col_notice.delete_many({
-        #      {'$or': [{'notice_user': user['user_id']}, {'notice_user': user['nickname']}, {'notice_info.nickname': user['nickname']}]}
-        # })
+        # 알림 collection에서 해당 user가 포함된 document 제거
+        col_notice.delete_many({
+             {'$or': [{'notice_user': user['user_id']}, {'notice_user': user['nickname']}, {'notice_info.nickname': user['nickname']}]}
+        })
 
-        # # 해당 user가 좋아요 누른 게시물 정보 수정
-        # for post_id in user['like']:
-        #     col_post.update_one({'_id': ObjectId(post_id)}, {'$pull' : {'like' : {'nickname' : user['nickname']}}})
+        # 해당 user가 좋아요 누른 게시물 정보 수정
+        for post_id in user['like']:
+            col_post.update_one({'_id': ObjectId(post_id)}, {'$pull' : {'like' : {'nickname' : user['nickname']}}})
 
-        # # 댓글 collection에서 해당 user가 포함된 document 수정 및 제거
-        # for comment in user['comment']:
-        #     tmp_data = comment
-        #     tmp_data['nickname'] = user['nickname']
-        #     if comment['kind'] == 'reply':
-        #         delete_reply(comment)
-        #     else:
-        #         delete_comment(comment)
+        # 댓글 collection에서 해당 user가 포함된 document 수정 및 제거
+        for comment in user['comment']:
+            tmp_data = comment
+            tmp_data['nickname'] = user['nickname']
+            if comment['kind'] == 'reply':
+                delete_reply(comment)
+            else:
+                delete_comment(comment)
 
-        # # 해당 user가 작성한 post 제거
-        # delete_posts = col_post.find({'create_user_nickname': user['nickname']})
-        # for post in delete_posts:
-        #     delete_post_one(str(post['_id']))
+        # 해당 user가 작성한 post 제거
+        delete_posts = col_post.find({'create_user_nickname': user['nickname']})
+        for post in delete_posts:
+            delete_post_one(str(post['_id']))
         
-        # # 해당 user의 profile, background 이미지 제거 
-        # default_user = col_user.find_one({'nickname': 'default'})
-        # if default_user['profile_img'][0] != user['profile_img'][0]:
-        #     col_delete.insert_one({
-        #         'file_route': 'images',
-        #         'file_name' : user['profile_img'][0]
-        #     })
-        # if default_user['background_img'][0] != user['background_img'][0]:
-        #     col_delete.insert_one({
-        #         'file_route': 'images',
-        #         'file_name' : user['background_img'][0]
-        #     })
+        # 해당 user의 profile, background 이미지 제거 
+        default_user = col_user.find_one({'nickname': 'default'})
+        if default_user['profile_img'][0] != user['profile_img'][0]:
+            col_delete.insert_one({
+                'file_route': 'images',
+                'file_name' : user['profile_img'][0]
+            })
+        if default_user['background_img'][0] != user['background_img'][0]:
+            col_delete.insert_one({
+                'file_route': 'images',
+                'file_name' : user['background_img'][0]
+            })
         
-        # # 해당 user의 친구 user에 friend_list 수정
-        # for friend in user['friend_list']:
-        #     col_user.update_one({'user_id': friend}, {'$pull' : {'friend_list': user['user_id']}})
+        # 해당 user의 친구 user에 friend_list 수정
+        for friend in user['friend_list']:
+            col_user.update_one({'user_id': friend}, {'$pull' : {'friend_list': user['user_id']}})
 
-        # # 해당 user 최종 삭제
-        # col_user.delete_one({'nickname': user['nickname']})
+        # 해당 user 최종 삭제
+        col_user.delete_one({'nickname': user['nickname']})
 
         data = True
     else:

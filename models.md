@@ -29,7 +29,7 @@
 	- text : text data
     - split_text : 개행문자 \n 처리 및 split한 text list
 	- images : 이미지 리스트
-    - hash_tag : 해시 태그 리스트
+    - hashtag : 해시 태그 리스트
     - like : 좋아요 누른 user 딕셔너리 리스트
     - comment : 댓글 개수
     - modified : 수정 여부(True, False)
