@@ -36,15 +36,13 @@
     </div>
     <div class="both_layout_content">
         <h4>게시물</h4>
-        {% if post_dict|length == 0 %}
+        {% if post_dic|length == 0 %}
         <div class="empty_content">
             <span class="empty_txt">검색어에 해당하는 게시물이 없습니다.</span>
             <img class="empty_img" src="../static/img/notes_gray.png" alt="notes">
         </div>
         {% else %}
-            {% for post in post_dic%}
-                {% include 'post.html' %}
-            {% endfor %}
+            {% include 'post.html' %}
         {% endif %}
     </div>
     <!-- 검색어 db 필터링, js 조건문 별로 다른 버튼 생성 -->

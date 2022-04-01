@@ -74,11 +74,11 @@ function indicate_comment(data, comment_div, notice = false){
                     'class': 'comment_nickname',
                     'id' : 'mention'
                 });
-                $(comment_text).text(data['comment'][i])
+                $(comment_text).text(data['comment'][i] + " ")
             }
             else {
                 comment_text = document.createElement('span');
-                $(comment_text).text(data['comment'][i])
+                $(comment_text).text(data['comment'][i] + " ")
             }
             create_div_comment_txt.appendChild(comment_text)
         }
@@ -112,7 +112,8 @@ function indicate_comment(data, comment_div, notice = false){
         create_div.appendChild(create_a_img);
         create_div.appendChild(create_div_user_comment);
         // 좋아요 리스트에 최종적으로 div 태그 append
-        if (typeof data['reply_list'] != 'undefined') {
+        // if (typeof data['reply_list'] != 'undefined') {
+        if (data['reply_list'].length > 0) {
             create_div.appendChild(create_btn_reply);
         }
 

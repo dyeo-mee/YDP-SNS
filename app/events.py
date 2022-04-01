@@ -57,7 +57,8 @@ def socketio_init(socketio):
             notice = list(notice)
             if len(notice):
                 notice[0]['_id'] = str(notice[0]['_id'])
-            emit('comment_notice',notice, broadcast=True) 
+            if message['create_user'] != session['nickname']:
+                emit('comment_notice',notice, broadcast=True) 
         else :
             notice = col_notice.find(
                 {'$and': [
@@ -68,8 +69,8 @@ def socketio_init(socketio):
             notice = list(notice)
             if len(notice):
                 notice[0]['_id'] = str(notice[0]['_id'])
-            emit('comment_notice',notice, broadcast=True) 
-
+            if message['create_user'] != session['nickname']:
+                emit('comment_notice',notice, broadcast=True)  
 
     @socketio.on('mention')
     def mention_notice(message):
